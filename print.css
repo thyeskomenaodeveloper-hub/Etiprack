@@ -1,0 +1,116 @@
+/* ==========================================================================
+   IMPRE SaaS - Professional Printing Stylesheet
+   Direct Browser & Thermal Printer 100% Millimeter Calibrated Printing
+   ========================================================================== */
+
+@media print {
+  /* Hide non-printable UI elements */
+  body * {
+    visibility: hidden;
+  }
+  
+  #print-mount-area, #print-mount-area * {
+    visibility: visible;
+  }
+  
+  #print-mount-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+  }
+
+  @page {
+    margin: 0;
+    size: auto;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  /* Thermal Printable Item Card */
+  .printable-label {
+    page-break-after: always;
+    break-after: page;
+    box-sizing: border-box;
+    overflow: hidden;
+    margin: 0 auto;
+    padding: 2mm;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #000000 !important;
+    background: #ffffff !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    border: none !important;
+  }
+
+  .printable-label img {
+    max-height: 8mm;
+    object-fit: contain;
+  }
+
+  .printable-label .p-title {
+    font-weight: bold;
+    font-size: 9pt;
+    line-height: 1.1;
+    text-transform: uppercase;
+    word-break: break-word;
+  }
+
+  .printable-label .p-price {
+    font-weight: 900;
+    font-size: 14pt;
+    line-height: 1;
+    margin: 1mm 0;
+  }
+
+  .printable-label .p-details {
+    font-size: 7pt;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .printable-label .p-barcode-svg {
+    max-width: 100%;
+    margin: 1mm auto 0 auto;
+    display: block;
+  }
+}
+
+/* On-screen Print Calibration Modal Instructions */
+.print-guide-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--accent-info);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.print-guide-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--accent-info);
+  margin-bottom: 8px;
+}
+
+.print-guide-list {
+  padding-left: 20px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.print-guide-list li {
+  margin-bottom: 4px;
+}

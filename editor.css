@@ -1,0 +1,239 @@
+/* ==========================================================================
+   IMPRE SaaS - Label Editor & Designer Styles
+   ========================================================================== */
+
+.designer-workspace {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 24px;
+  height: calc(100vh - var(--header-height) - 56px);
+}
+
+.designer-controls {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.designer-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Control Toggles */
+.toggle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.toggle-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--bg-input);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition-fast);
+}
+
+.toggle-item:hover {
+  border-color: var(--text-muted);
+}
+
+.toggle-item input[type="checkbox"] {
+  accent-color: var(--accent-primary);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* Preview Canvas Container */
+.preview-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.preview-toolbar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-secondary);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  z-index: 10;
+}
+
+.preview-zoom-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Simulated Thermal Label Box */
+.label-canvas-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  transition: transform var(--transition-fast);
+}
+
+.label-canvas {
+  background: #ffffff;
+  color: #000000;
+  box-sizing: border-box;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  border: 1px dashed #cbd5e1;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.2;
+}
+
+.label-logo-area {
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.label-logo-area img {
+  max-height: 36px;
+  max-width: 80%;
+  object-fit: contain;
+}
+
+.label-header {
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.label-header .label-product-title {
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+  word-wrap: break-word;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.label-header .label-code {
+  font-size: 10px;
+  color: #475569;
+}
+
+.label-price-box {
+  text-align: center;
+  margin: 4px 0;
+  padding: 2px 0;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.label-price-val {
+  font-weight: 900;
+  font-size: 18px;
+  color: #000000;
+}
+
+.label-price-sub {
+  font-size: 9px;
+  color: #334155;
+}
+
+.label-details-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: #1e293b;
+  margin: 2px 0;
+}
+
+.label-barcode-area {
+  text-align: center;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.label-barcode-area svg, 
+.label-barcode-area canvas, 
+.label-barcode-area img {
+  max-width: 100%;
+  height: auto;
+}
+
+.label-barcode-text {
+  font-family: monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  margin-top: 1px;
+}
+
+/* Preset Size Picker Pill Buttons */
+.size-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.size-pill {
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.size-pill:hover {
+  border-color: var(--accent-primary);
+}
+
+.size-pill.active {
+  background: var(--accent-primary-light);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}

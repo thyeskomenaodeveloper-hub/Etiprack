@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IMPRE SaaS — Gerador de Etiquetas de Preços e Balança</title>
+  <meta name="description" content="Sistema web SaaS profissional de geração e impressão de etiquetas de preços com códigos de barras para mercados, adegas e balanças etiquetadoras.">
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Remix Icons CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  
+  <!-- Application CSS Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/editor.css">
+  <link rel="stylesheet" href="css/print.css">
+</head>
+<body>
+
+  <!-- Printable Mount Area for @media print -->
+  <div id="print-mount-area"></div>
+
+  <!-- Toast Notification Mount Point -->
+  <div id="toast-container"></div>
+
+  <div id="app">
+
+    <!-- ====================================================================
+         1. AUTHENTICATION WRAPPER (LOGIN, REGISTER, RECOVERY)
+         ==================================================================== -->
+    <div id="app-auth-wrapper" class="auth-container" style="display: none;">
+      
+      <!-- LOGIN FORM VIEW -->
+      <div id="auth-view-login" class="auth-card">
+        <div class="auth-brand">
+          <div class="logo-icon"><i class="ri-barcode-box-line"></i></div>
+          <h1>IMPRE SaaS</h1>
+        </div>
+        <div class="auth-header">
+          <h2>Acesse sua conta</h2>
+          <p>Digite suas credenciais para acessar o painel de etiquetas</p>
+        </div>
+        <form onsubmit="handleLoginSubmit(event)">
+          <div class="form-group">
+            <label>E-mail Corporativo</label>
+            <input type="email" id="login-email" class="form-control" placeholder="seu@email.com.br" required value="carlos@mercadocentral.com.br">
+          </div>
+          <div class="form-group">
+            <label>Senha</label>
+            <input type="password" id="login-password" class="form-control" placeholder="••••••••" required value="cliente123">
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 12px;">
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+              <input type="checkbox" checked> Lembrar-me
+            </label>
+            <a href="#" onclick="app.showAuthView('forgot'); return false;">Esqueceu a senha?</a>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">
+            <i class="ri-login-circle-line"></i> Entrar na Plataforma
+          </button>
+        </form>
+
+        <div style="margin-top: 20px; font-size: 11px; background: var(--bg-tertiary); padding: 10px; border-radius: var(--radius-sm); color: var(--text-muted); text-align: center;">
+          💡 <strong>Demonstração Rápida:</strong><br>
+          • Cliente: <code>carlos@mercadocentral.com.br</code> / <code>cliente123</code><br>
+          • Admin Master: <code>admin@impre.com.br</code> / <code>admin123</code>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px; font-size: 13px; color: var(--text-secondary);">
+          Ainda não possui conta? <a href="#" onclick="app.showAuthView('register'); return false;">Cadastre sua empresa</a>
+        </div>
+      </div>
+
+      <!-- REGISTER FORM VIEW -->
+      <div id="auth-view-register" class="auth-card" style="display: none;">
+        <div class="auth-brand">
+          <div class="logo-icon"><i class="ri-barcode-box-line"></i></div>
+          <h1>IMPRE SaaS</h1>
+        </div>
+        <div class="auth-header">
+          <h2>Criar Conta de Revenda / Cliente</h2>
+          <p>Experimente grátis por 7 dias com acesso completo</p>
+        </div>
+        <form onsubmit="handleRegisterSubmit(event)">
+          <div class="form-group">
+            <label>Nome da Empresa / Estabelecimento *</label>
+            <input type="text" id="reg-company" class="form-control" placeholder="Ex: Supermercado Primavera" required>
+          </div>
+          <div class="form-group">
+            <label>Nome do Responsável *</label>
+            <input type="text" id="reg-name" class="form-control" placeholder="Seu nome completo" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>E-mail *</label>
+              <input type="email" id="reg-email" class="form-control" placeholder="contato@empresa.com" required>
+            </div>
+            <div class="form-group">
+              <label>Telefone *</label>
+              <input type="tel" id="reg-phone" class="form-control" placeholder="(11) 99999-9999" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>CNPJ / CPF (Opcional)</label>
+              <input type="text" id="reg-cnpj" class="form-control" placeholder="00.000.000/0001-00">
+            </div>
+            <div class="form-group">
+              <label>Senha *</label>
+              <input type="password" id="reg-password" class="form-control" placeholder="••••••••" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 8px;">
+            <i class="ri-user-add-line"></i> Cadastrar e Começar Teste Grátis
+          </button>
+        </form>
+        <div style="text-align: center; margin-top: 20px; font-size: 13px; color: var(--text-secondary);">
+          Já possui conta? <a href="#" onclick="app.showAuthView('login'); return false;">Fazer Login</a>
+        </div>
+      </div>
+
+      <!-- FORGOT PASSWORD VIEW -->
+      <div id="auth-view-forgot" class="auth-card" style="display: none;">
+        <div class="auth-brand">
+          <div class="logo-icon"><i class="ri-key-line"></i></div>
+          <h1>Recuperar Senha</h1>
+        </div>
+        <div class="auth-header">
+          <p>Informe seu e-mail cadastrado para receber as instruções de redefinição de senha.</p>
+        </div>
+        <form onsubmit="handleForgotSubmit(event)">
+          <div class="form-group">
+            <label>E-mail Cadastrado</label>
+            <input type="email" id="forgot-email" class="form-control" placeholder="seu@email.com.br" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">Enviar E-mail de Recuperação</button>
+        </form>
+        <div style="text-align: center; margin-top: 20px; font-size: 13px;">
+          <a href="#" onclick="app.showAuthView('login'); return false;">Voltar para o Login</a>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ====================================================================
+         2. MAIN APPLICATION LAYOUT (SIDEBAR + TOPBAR + VIEWS)
+         ==================================================================== -->
+    <div id="app-main-layout" style="display: flex; width: 100vw; min-height: 100vh;">
+      
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-brand-icon"><i class="ri-barcode-box-line"></i></div>
+          <span class="sidebar-brand-text">IMPRE SaaS</span>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="nav-section-title">Geral</div>
+          <a href="#" class="nav-item active" data-target="dashboard">
+            <i class="ri-dashboard-3-line"></i> Dashboard
+          </a>
+          <a href="#" class="nav-item" data-target="designer">
+            <i class="ri-palette-line"></i> Gerador de Etiquetas
+          </a>
+          <a href="#" class="nav-item" data-target="scale">
+            <i class="ri-scales-3-line"></i> Etiqueta para Balança
+          </a>
+
+          <div class="nav-section-title">Cadastros</div>
+          <a href="#" class="nav-item" data-target="products">
+            <i class="ri-shopping-bag-3-line"></i> Meus Produtos
+          </a>
+          <a href="#" class="nav-item" data-target="import">
+            <i class="ri-file-upload-line"></i> Importar CSV / Excel
+          </a>
+
+          <div class="nav-section-title">Auditoria</div>
+          <a href="#" class="nav-item" data-target="history">
+            <i class="ri-history-line"></i> Histórico de Impressão
+          </a>
+
+          <div class="nav-section-title" id="nav-admin-title">Plataforma</div>
+          <a href="#" class="nav-item" id="nav-item-admin" data-target="admin" style="display: none;">
+            <i class="ri-shield-user-line"></i> Painel Administrativo
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="tenant-badge-card">
+            <div class="tenant-name" id="sidebar-company-name">Empresa...</div>
+            <span id="sidebar-plan-tag" class="plan-tag plan-pro">Plano Profissional</span>
+          </div>
+          <button onclick="auth.logout()" class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 10px; justify-content: center;">
+            <i class="ri-logout-box-r-line"></i> Sair da Conta
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN WRAPPER -->
+      <div class="main-wrapper">
+        
+        <!-- TOP NAVBAR -->
+        <header class="top-navbar">
+          <div class="navbar-page-title">
+            <h2>Sistema SaaS de Gerador e Impressão de Etiquetas</h2>
+          </div>
+          <div class="navbar-actions">
+            <div style="display: flex; align-items: center; gap: 8px; margin-right: 15px; border-right: 1px solid var(--border-color); padding-right: 15px;">
+              <i class="ri-printer-line" style="color: var(--text-muted);" title="Modo de Impressora"></i>
+              <select id="global-printer-mode" class="form-control" style="width: auto; padding: 4px 8px; height: 32px; font-size: 12px; background-color: var(--bg-tertiary);">
+                <option value="thermal">Térmica (Rolo)</option>
+                <option value="a4">Normal (Folha A4)</option>
+              </select>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="app.navigateTo('designer')">
+              <i class="ri-add-line"></i> Nova Etiqueta
+            </button>
+            <div class="user-profile-menu">
+              <div class="user-avatar" id="user-avatar-letter">C</div>
+              <div class="user-info">
+                <div style="font-weight: 600;" id="user-display-name">Usuário</div>
+                <div style="font-size: 10px; color: var(--text-muted);" id="user-display-company">Empresa</div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- CONTENT AREA (VIEW CONTAINERS) -->
+        <main class="content-area">
+
+          <!-- VIEW: DASHBOARD -->
+          <section id="view-dashboard" class="page-view active">
+            <div style="margin-bottom: 24px;">
+              <h2 style="font-size: 22px; font-weight: 700;">Visão Geral da Empresa</h2>
+              <p style="color: var(--text-secondary); font-size: 13px;">Acompanhe o consumo do seu plano e atalhos rápidos para geração de etiquetas</p>
+            </div>
+
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-info">
+                  <div class="stat-label">Total de Produtos</div>
+                  <div class="stat-value" id="dash-stat-products">0</div>
+                </div>
+                <div class="stat-icon" style="background: var(--accent-primary-light); color: var(--accent-primary);">
+                  <i class="ri-shopping-bag-line"></i>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-info">
+                  <div class="stat-label">Etiquetas Geradas (Total)</div>
+                  <div class="stat-value" id="dash-stat-labels">0</div>
+                </div>
+                <div class="stat-icon" style="background: var(--accent-success-light); color: var(--accent-success);">
+                  <i class="ri-barcode-line"></i>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-info">
+                  <div class="stat-label">Impressas Hoje</div>
+                  <div class="stat-value" id="dash-stat-today">0</div>
+                </div>
+                <div class="stat-icon" style="background: var(--accent-warning-light); color: var(--accent-warning);">
+                  <i class="ri-printer-line"></i>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-info">
+                  <div class="stat-label">Plano Atual</div>
+                  <div class="stat-value" id="dash-stat-plan" style="font-size: 18px;">Profissional</div>
+                </div>
+                <div class="stat-icon" style="background: var(--accent-info-light); color: var(--accent-info);">
+                  <i class="ri-vip-crown-line"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- PLAN CONSUMPTION GAUGE CARD -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; margin-bottom: 28px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h4 style="font-size: 14px; font-weight: 600;">Consumo Mensal de Etiquetas do Plano</h4>
+                <span id="dash-plan-meter-text" style="font-size: 12px; font-weight: 700; color: var(--accent-primary);">0 / 5000 (0%)</span>
+              </div>
+              <div style="width: 100%; height: 10px; background: var(--bg-tertiary); border-radius: var(--radius-full); overflow: hidden;">
+                <div id="dash-plan-meter" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-info)); transition: width 0.5s ease;"></div>
+              </div>
+            </div>
+
+            <!-- RECENT PRINTS TABLE -->
+            <div class="table-container">
+              <div class="table-header-tools">
+                <h4 style="font-size: 14px; font-weight: 600;">Últimas Etiquetas Imprimidas</h4>
+                <button class="btn btn-secondary btn-sm" onclick="app.navigateTo('history')">Ver Histórico Completo</button>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Horário</th>
+                    <th>Produto</th>
+                    <th>Código de Barras</th>
+                    <th>Quantidade</th>
+                    <th>Tamanho</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-recent-prints-body"></tbody>
+              </table>
+            </div>
+          </section>
+
+
+          <!-- VIEW: VISUAL LABEL DESIGNER -->
+          <section id="view-designer" class="page-view">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <div>
+                <h2 style="font-size: 22px; font-weight: 700;">Gerador & Editor Visual de Etiquetas</h2>
+                <p style="color: var(--text-secondary); font-size: 13px;">Personalize layout, tipografia, logotipos e tamanhos pré-definidos com pré-visualização em tempo real</p>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-right: 15px; border-right: 1px solid var(--border-color); padding-right: 15px;">
+                  <label style="font-size: 13px; font-weight: 600;">Qtd:</label>
+                  <input type="number" id="designer-qty" class="form-control" value="1" min="1" style="width: 70px; padding: 4px 8px; height: 32px;">
+                </div>
+                <span id="queue-counter" style="font-size: 13px; font-weight: 700; color: var(--accent-primary); display: none; margin-right: 10px;">Fila: 0</span>
+                <button class="btn btn-secondary" onclick="let p = labelDesigner.getCurrentProduct(); p.quantity = parseInt(document.getElementById('designer-qty').value) || 1; printEngine.addToQueue(p);">
+                  <i class="ri-shopping-cart-line"></i> Adicionar à Fila
+                </button>
+                <button class="btn btn-primary" id="btn-print-queue" onclick="printEngine.printQueueItems()" style="display: none;">
+                  <i class="ri-printer-line"></i> Imprimir Fila
+                </button>
+                <button class="btn btn-danger" id="btn-clear-queue" onclick="printEngine.clearQueue()" style="display: none;" title="Limpar Fila">
+                  <i class="ri-delete-bin-line"></i>
+                </button>
+                <button class="btn btn-success" onclick="let p = labelDesigner.getCurrentProduct(); p.quantity = parseInt(document.getElementById('designer-qty').value) || 1; printEngine.printLabels([p]);">
+                  <i class="ri-printer-line"></i> Imprimir Atual
+                </button>
+              </div>
+            </div>
+
+            <div class="designer-workspace">
+              
+              <!-- LEFT CONTROLS PANEL -->
+              <div class="designer-controls">
+                
+                <!-- Size Picker -->
+                <div>
+                  <div class="designer-section-title"><i class="ri-ruler-line"></i> Tamanho da Etiqueta</div>
+                  <div class="size-picker">
+                    <button class="size-pill" data-size="30x20">30 × 20 mm</button>
+                    <button class="size-pill active" data-size="40x25">40 × 25 mm</button>
+                    <button class="size-pill" data-size="40x30">40 × 30 mm</button>
+                    <button class="size-pill" data-size="50x30">50 × 30 mm</button>
+                    <button class="size-pill" data-size="57x32">57 × 32 mm</button>
+                    <button class="size-pill" data-size="60x40">60 × 40 mm</button>
+                    <button class="size-pill" data-size="70x40">70 × 40 mm</button>
+                    <button class="size-pill" data-size="80x50">80 × 50 mm</button>
+                    <button class="size-pill" data-size="100x50">100 × 50 mm</button>
+                  </div>
+                </div>
+
+                <!-- Logo Upload -->
+                <div>
+                  <div class="designer-section-title"><i class="ri-image-line"></i> Logotipo da Empresa</div>
+                  <input type="file" id="designer-logo-file" accept="image/*" class="form-control" style="font-size: 11px;">
+                </div>
+
+                <!-- Typography Controls -->
+                <div>
+                  <div class="designer-section-title"><i class="ri-text"></i> Tipografia & Estilo</div>
+                  <div class="form-group">
+                    <label>Tamanho da Fonte (pt)</label>
+                    <input type="range" min="8" max="22" value="12" class="form-control" onchange="labelDesigner.setDesignOption('fontSize', parseInt(this.value, 10))">
+                  </div>
+                  <div class="form-group">
+                    <label>Fonte</label>
+                    <select class="form-control" onchange="labelDesigner.setDesignOption('fontFamily', this.value)">
+                      <option value="Arial, sans-serif">Arial / Helvetica (Padrão Térmico)</option>
+                      <option value="'Inter', sans-serif">Inter (Moderna)</option>
+                      <option value="'Courier New', monospace">Courier (Monospaçada)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Element Visibility Toggles -->
+                <div>
+                  <div class="designer-section-title"><i class="ri-eye-line"></i> Exibir / Ocultar Elementos</div>
+                  <div class="toggle-grid">
+                    <label class="toggle-item"><input type="checkbox" data-prop="showLogo" checked> Logotipo</label>
+                    <label class="toggle-item"><input type="checkbox" data-prop="showTitle" checked> Nome Produto</label>
+                    <label class="toggle-item"><input type="checkbox" data-prop="showCode" checked> Código</label>
+                    <label class="toggle-item"><input type="checkbox" data-prop="showPrice" checked> Preço</label>
+                    <label class="toggle-item"><input type="checkbox" data-prop="showWeight" checked> Peso</label>
+                    <label class="toggle-item"><input type="checkbox" data-prop="showMfgDate" checked> Data Fab.</label>
+                    <label class="toggle-item"><input type="checkbox" data-prop="showExpDate" checked> Data Val.</label>
+                    <label class="toggle-item"><input type="checkbox" data-prop="showLot" checked> Lote</label>
+                    <label class="toggle-item"><input type="checkbox" data-prop="showBarcode" checked> Cód. Barras</label>
+                    <label class="toggle-item"><input type="checkbox" data-prop="showAdditionalInfo"> Obs. Adic.</label>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- RIGHT LIVE PREVIEW CANVAS -->
+              <div class="preview-container">
+                <div class="preview-toolbar">
+                  <span class="preview-zoom-label">Pré-visualização 1:1 Interativa</span>
+                </div>
+
+                <div id="label-preview-target"></div>
+              </div>
+
+            </div>
+          </section>
+
+
+          <!-- VIEW: ETIQUETA PARA BALANÇA -->
+          <section id="view-scale" class="page-view">
+            <div style="margin-bottom: 24px;">
+              <h2 style="font-size: 22px; font-weight: 700;">Etiqueta para Balança (Produtos Pesáveis)</h2>
+              <p style="color: var(--text-secondary); font-size: 13px;">Geração de código de barras EAN-13 dinâmico com valor/peso embutido para Toledo, Filizola, Urano, Elgin e Ramuza</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 380px 1fr; gap: 24px;">
+              
+              <!-- Scale Form Controls -->
+              <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px;">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                  Configuração de Produto Pesável
+                </h4>
+
+                <div class="form-group">
+                  <label>Selecionar Produto do Cadastro</label>
+                  <select id="scale-prod-select" class="form-control" onchange="scaleApp.onScaleProductSelect(this.value)"></select>
+                </div>
+
+                <div class="form-group">
+                  <label>Modelo / Marca da Balança</label>
+                  <select id="scale-brand-preset" class="form-control" onchange="scaleApp.updateScaleLabelPreview()">
+                    <option value="toledo_price">Toledo Prix (Preço Total Embutido - Prefixo 20)</option>
+                    <option value="toledo_weight">Toledo Prix (Peso Embutido - Prefixo 21)</option>
+                    <option value="filizola_price">Filizola (Preço Total - Prefixo 2)</option>
+                    <option value="urano">Urano / Elgin (Preço Total - Prefixo 22)</option>
+                  </select>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Código Interno</label>
+                    <input type="text" id="scale-item-code" class="form-control" value="2005" oninput="scaleApp.updateScaleLabelPreview()">
+                  </div>
+                  <div class="form-group">
+                    <label>Preço por kg (R$)</label>
+                    <input type="number" step="0.01" id="scale-unit-price" class="form-control" value="89.90" oninput="scaleApp.updateScaleLabelPreview()">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label>Peso Pesado na Balança (kg)</label>
+                  <input type="number" step="0.001" id="scale-weight-input" class="form-control" value="0.500" oninput="scaleApp.updateScaleLabelPreview()">
+                </div>
+
+                <button class="btn btn-success" style="width: 100%; margin-top: 12px;" onclick="scaleApp.printScaleLabel()">
+                  <i class="ri-printer-line"></i> Imprimir Etiqueta de Balança
+                </button>
+              </div>
+
+              <!-- Scale Preview Display -->
+              <div class="preview-container">
+                <div id="scale-label-preview-target"></div>
+              </div>
+
+            </div>
+          </section>
+
+
+          <!-- VIEW: MEUS PRODUTOS (CRUD) -->
+          <section id="view-products" class="page-view">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <div>
+                <h2 style="font-size: 22px; font-weight: 700;">Cadastro de Produtos</h2>
+                <p style="color: var(--text-secondary); font-size: 13px;">Gerencie o catálogo de produtos com códigos de barras e modelos de etiquetas</p>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" onclick="app.navigateTo('import')">
+                  <i class="ri-file-upload-line"></i> Importar CSV
+                </button>
+                <button class="btn btn-primary" onclick="productsManager.openNewModal()">
+                  <i class="ri-add-line"></i> Cadastrar Produto
+                </button>
+              </div>
+            </div>
+
+            <div class="table-container">
+              <div class="table-header-tools">
+                <div class="search-box">
+                  <i class="ri-search-line"></i>
+                  <input type="text" class="form-control" placeholder="Buscar por código ou nome..." oninput="productsManager.currentFilter = this.value; productsManager.loadProductsTable();">
+                </div>
+                <div>
+                  <select class="form-control" style="width: auto;" onchange="productsManager.currentCategory = this.value; productsManager.loadProductsTable();">
+                    <option value="">Todas as Categorias</option>
+                    <option value="Mercearia">Mercearia</option>
+                    <option value="Açougue">Açougue</option>
+                    <option value="Bebidas">Bebidas</option>
+                    <option value="Hortifruti">Hortifruti</option>
+                    <option value="Padaria">Padaria</option>
+                  </select>
+                </div>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 30px;"><input type="checkbox"></th>
+                    <th>Cód. Interno</th>
+                    <th>Produto / Descrição</th>
+                    <th>Categoria</th>
+                    <th>Cód. Barras (EAN)</th>
+                    <th>Preço</th>
+                    <th>Tipo</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="products-table-body"></tbody>
+              </table>
+            </div>
+          </section>
+
+
+          <!-- VIEW: IMPORTAR CSV / EXCEL -->
+          <section id="view-import" class="page-view">
+            <div style="margin-bottom: 24px;">
+              <h2 style="font-size: 22px; font-weight: 700;">Importação em Massa de Produtos (CSV / Excel)</h2>
+              <p style="color: var(--text-secondary); font-size: 13px;">Faça o upload de uma planilha contendo a lista de produtos para cadastro automático com verificação prévia de erros</p>
+            </div>
+
+            <div style="background: var(--bg-card); border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 40px; text-align: center;">
+              <i class="ri-file-excel-line" style="font-size: 48px; color: var(--accent-primary); margin-bottom: 12px; display: inline-block;"></i>
+              <h3>Selecione ou arraste seu arquivo .CSV ou .XLSX</h3>
+              <p style="color: var(--text-muted); font-size: 12px; margin-top: 6px;">Colunas aceitas: <code>codigo</code>, <code>nome</code>, <code>preco</code>, <code>cod_barras</code>, <code>categoria</code>, <code>unidade</code></p>
+              
+              <input type="file" id="import-file-input" accept=".csv,.xlsx,.xls" style="display: none;">
+              <button class="btn btn-primary" style="margin-top: 16px;" onclick="document.getElementById('import-file-input').click()">
+                <i class="ri-folder-open-line"></i> Selecionar Arquivo do Computador
+              </button>
+            </div>
+
+            <div id="import-preview-container"></div>
+          </section>
+
+
+          <!-- VIEW: HISTÓRICO DE IMPRESSÃO -->
+          <section id="view-history" class="page-view">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <div>
+                <h2 style="font-size: 22px; font-weight: 700;">Histórico de Impressões</h2>
+                <p style="color: var(--text-secondary); font-size: 13px;">Registro completo de auditoria de todas as etiquetas geradas e impressas no sistema</p>
+              </div>
+              <button class="btn btn-secondary" onclick="historyManager.exportHistoryCSV()">
+                <i class="ri-download-line"></i> Exportar Relatório CSV
+              </button>
+            </div>
+
+            <div class="table-container">
+              <div class="table-header-tools">
+                <div class="search-box">
+                  <i class="ri-search-line"></i>
+                  <input type="text" class="form-control" placeholder="Buscar por produto ou código..." oninput="historyManager.filterText = this.value; historyManager.loadHistoryTable();">
+                </div>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Data & Hora</th>
+                    <th>Produto Impresso</th>
+                    <th>Código de Barras</th>
+                    <th>Quantidade</th>
+                    <th>Modelo / Tamanho</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="history-table-body"></tbody>
+              </table>
+            </div>
+          </section>
+
+
+          <!-- VIEW: PAINEL ADMINISTRATIVO (SUPER ADMIN) -->
+          <section id="view-admin" class="page-view">
+            <div style="margin-bottom: 24px;">
+              <h2 style="font-size: 22px; font-weight: 700;">Painel de Controle do Administrador (Plataforma SaaS)</h2>
+              <p style="color: var(--text-secondary); font-size: 13px;">Gerenciamento de contas de revenda, status dos usuários, limites de planos e relatórios globais</p>
+            </div>
+
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-info">
+                  <div class="stat-label">Total de Clientes Cadastrados</div>
+                  <div class="stat-value" id="admin-stat-clients">0</div>
+                </div>
+                <div class="stat-icon" style="background: var(--accent-primary-light); color: var(--accent-primary);">
+                  <i class="ri-team-line"></i>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-info">
+                  <div class="stat-label">Clientes Ativos</div>
+                  <div class="stat-value" id="admin-stat-active">0</div>
+                </div>
+                <div class="stat-icon" style="background: var(--accent-success-light); color: var(--accent-success);">
+                  <i class="ri-checkbox-circle-line"></i>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-info">
+                  <div class="stat-label">Etiquetas Impressas na Plataforma</div>
+                  <div class="stat-value" id="admin-stat-labels">0</div>
+                </div>
+                <div class="stat-icon" style="background: var(--accent-info-light); color: var(--accent-info);">
+                  <i class="ri-bar-chart-fill"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-container">
+              <div class="table-header-tools">
+                <div class="search-box">
+                  <i class="ri-search-line"></i>
+                  <input type="text" class="form-control" placeholder="Buscar cliente por empresa ou e-mail..." oninput="adminManager.currentSearch = this.value; adminManager.loadAdminView();">
+                </div>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Empresa / Responsável</th>
+                    <th>Plano</th>
+                    <th>Status</th>
+                    <th>Etiquetas Geradas / Limite</th>
+                    <th>Data Cadastro</th>
+                    <th>Ações de Controle</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-users-table-body"></tbody>
+              </table>
+            </div>
+          </section>
+
+        </main>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ====================================================================
+       MODALS SECTION
+       ==================================================================== -->
+
+  <!-- MODAL: CADASTRAR / EDITAR PRODUTO -->
+  <div class="modal-backdrop" id="modal-product-form">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Manutenção de Produto</h3>
+        <i class="ri-close-line" style="cursor: pointer; font-size: 20px;" data-close-modal></i>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="prod-form-id">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Código Interno *</label>
+            <input type="text" id="prod-form-code" class="form-control" placeholder="Ex: 1001" required>
+          </div>
+          <div class="form-group">
+            <label>Código de Barras EAN-13 (Opcional)</label>
+            <input type="text" id="prod-form-barcode" class="form-control" placeholder="7891000100103">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Nome do Produto *</label>
+          <input type="text" id="prod-form-name" class="form-control" placeholder="Ex: Café Torrado e Moído 500g" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Categoria</label>
+            <select id="prod-form-category" class="form-control">
+              <option value="Mercearia">Mercearia</option>
+              <option value="Açougue">Açougue</option>
+              <option value="Bebidas">Bebidas</option>
+              <option value="Hortifruti">Hortifruti</option>
+              <option value="Padaria">Padaria</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Preço de Venda (R$) *</label>
+            <input type="number" step="0.01" id="prod-form-price" class="form-control" placeholder="0.00" required>
+          </div>
+          <div class="form-group">
+            <label>Unidade</label>
+            <select id="prod-form-unit" class="form-control">
+              <option value="un">un (Unitário)</option>
+              <option value="kg">kg (Quilograma)</option>
+              <option value="g">g (Grama)</option>
+              <option value="L">L (Litro)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 8px; margin-top: 24px; cursor: pointer;">
+              <input type="checkbox" id="prod-form-weighable"> Produto Pesável em Balança
+            </label>
+          </div>
+          <div class="form-group">
+            <label>Validade Padrão (Dias)</label>
+            <input type="number" id="prod-form-expdays" class="form-control" value="365">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Número do Lote</label>
+          <input type="text" id="prod-form-lot" class="form-control" placeholder="Ex: L-2026A">
+        </div>
+
+        <div class="form-group">
+          <label>Informações Adicionais</label>
+          <textarea id="prod-form-info" class="form-control" rows="2" placeholder="Informações de armazenamento, conservação..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close-modal>Cancelar</button>
+        <button class="btn btn-primary" onclick="productsManager.saveProductFromForm()">
+          <i class="ri-save-line"></i> Salvar Produto
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL: EDITAR USUARIO (SUPER ADMIN) -->
+  <div class="modal-backdrop" id="modal-admin-user">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Gerenciar Conta do Cliente</h3>
+        <i class="ri-close-line" style="cursor: pointer; font-size: 20px;" data-close-modal></i>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="admin-form-userid">
+
+        <div class="form-group">
+          <label>Nome da Empresa</label>
+          <input type="text" id="admin-form-company" class="form-control" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Responsável</label>
+            <input type="text" id="admin-form-responsible" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>E-mail</label>
+            <input type="email" id="admin-form-email" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Telefone</label>
+            <input type="text" id="admin-form-phone" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Plano de Assinatura</label>
+            <select id="admin-form-plan" class="form-control">
+              <option value="basic">Plano Básico (500 etiq/mês)</option>
+              <option value="pro">Plano Profissional (5.000 etiq/mês)</option>
+              <option value="premium">Plano Premium (Ilimitado)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Status da Conta</label>
+          <select id="admin-form-status" class="form-control">
+            <option value="Ativo">Ativo</option>
+            <option value="Bloqueado">Bloqueado</option>
+            <option value="Teste">Teste Grátis</option>
+            <option value="Expirado">Expirado</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close-modal>Cancelar</button>
+        <button class="btn btn-primary" onclick="adminManager.saveUserFromAdmin()">
+          <i class="ri-save-line"></i> Salvar Alterações
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Application Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/barcodeEngine.js"></script>
+  <script src="js/scaleEngine.js"></script>
+  <script src="js/designer.js"></script>
+  <script src="js/printEngine.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/import.js"></script>
+  <script src="js/history.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

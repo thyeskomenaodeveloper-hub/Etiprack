@@ -1,0 +1,9 @@
+codigo,nome,preco,cod_barras,categoria,unidade
+1010,Arroz Branco Tipo 1 5kg,28.90,7891000300107,Mercearia,un
+1011,Feijão Carioca 1kg,8.50,7891000300114,Mercearia,un
+1012,Açúcar Refinado Alto Alegre 1kg,4.20,7891000300121,Mercearia,un
+1013,Óleo de Soja Liza 900ml,6.80,7891000300138,Mercearia,un
+2020,Alcatra Bovina Fatiada / kg,45.90,20020002295,Açougue,kg
+2021,Linguiça Toscana Sadia / kg,22.50,20021001125,Açougue,kg
+3030,Cerveja Heineken Long Neck 330ml,6.90,7891000300169,Bebidas,un
+3031,Suco de Laranja Prats 900ml,11.90,7891000300176,Bebidas,un
